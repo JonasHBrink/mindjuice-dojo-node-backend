@@ -1,0 +1,59 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Dependency directories
+node_modules
+
+# Build generated files
+lib
+dist
+solution
+temp
+*.sppkg
+
+# Coverage directory used by tools like istanbul
+coverage
+
+# OSX
+.DS_Store
+
+# Visual Studio files
+.ntvs_analysis.dat
+.vs
+bin
+obj
+
+# Resx Generated Code
+*.resx.ts
+
+# Styles Generated Code
+*.scss.ts
+
+# Build directories
+content
+npm
+dist
+deploy
+test/
+src/**/*.js
+src/**/*.js.map
+src/**/*.d.ts
+!src/**/ResizeObserver.d.ts
+test/**/*.js
+test/**/*.js.map
+test/**/*.d.ts
+.nyc_output
+analysis/
+
+# Demo directories
+demo/src/**/*.js
+demo/src/**/*.js.map
+demo/src/**/*.d.ts
+demo/stores/**/*.js
+demo/stores/**/*.js.map
+demo/stores/**/*.d.ts
+demo/test/**/*.js
+demo/test/**/*.js.map
+demo/test/**/*.d.ts
