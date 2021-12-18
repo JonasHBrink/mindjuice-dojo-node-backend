@@ -24,7 +24,7 @@ app.get("/api", (req, res) => {
 
 app.post("/upload", (req, res) => {
   // upload(req);
-  res.json({ message: req.body.todo });
+  res.json({ message: req.body });
 });
 
 async function upload(file) {
