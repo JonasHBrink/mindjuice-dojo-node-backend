@@ -77,48 +77,52 @@ http.createServer((req, response) => {
    * Saves uploaded files to the root
    */
   else if (req.url == '/fileUpload' && req.method.toLowerCase() == 'post') {
-    let contentLength = parseInt(req.headers['content-length'])
-    if (isNaN(contentLength) || contentLength <= 0) {
-      response.statusCode = 411;
-      response.end(JSON.stringify({ status: 'error', description: 'No File' }))
-      return
-    }
 
-    // Try to use the original filename
-    let filename = req.headers['filename']
-    if (filename == null) {
-      filename = "file." + req.headers['content-type'].split('/')[1]
-    }
+    response.statusCode = 411;
+    response.end(JSON.stringify({ status: 'error', description: 'No File' }))
+    return
+    // let contentLength = parseInt(req.headers['content-length'])
+    // if (isNaN(contentLength) || contentLength <= 0) {
+    //   response.statusCode = 411;
+    //   response.end(JSON.stringify({ status: 'error', description: 'No File' }))
+    //   return
+    // }
+
+    // // Try to use the original filename
+    // let filename = req.headers['filename']
+    // if (filename == null) {
+    //   filename = "file." + req.headers['content-type'].split('/')[1]
+    // }
 
 
-    const client = new ftp.Client(/*timeout = 180000*/) // 2min timeout for debug
-    client.ftp.verbose = true
-    client.access({
-      host: "linux110.unoeuro.com",
-      user: "studiebyen-humle.dk",
-      password: "Crockstar612",
-      secure: false
-    }).then(ftpResponse => {
-      (async () => {
-        try {
-          // Upload the image to the FTP server
-          await client.uploadFrom(req, `uploads/${filename}`)
+    // const client = new ftp.Client(/*timeout = 180000*/) // 2min timeout for debug
+    // client.ftp.verbose = true
+    // client.access({
+    //   host: "linux110.unoeuro.com",
+    //   user: "studiebyen-humle.dk",
+    //   password: "Crockstar612",
+    //   secure: false
+    // }).then(ftpResponse => {
+    //   (async () => {
+    //     try {
+    //       // Upload the image to the FTP server
+    //       await client.uploadFrom(req, `uploads/${filename}`)
 
-          // Download the image from the FTP server and send it as response
-          response.setHeader('Content-Type', req.headers['content-type'])
-          var base64Encoder = new Base64Encode()
-          base64Encoder.pipe(response)
-          await client.downloadTo(base64Encoder, `uploads/${filename}`)
-        }
-        catch (err) {
-          console.log(err)
-          response.statusCode = 400;
-          response.setHeader('Content-Type', 'application/json')
-          response.end(JSON.stringify({ status: 'error', description: error }))
-        }
-        client.close()
-      })();
-    })
+    //       // Download the image from the FTP server and send it as response
+    //       response.setHeader('Content-Type', req.headers['content-type'])
+    //       var base64Encoder = new Base64Encode()
+    //       base64Encoder.pipe(response)
+    //       await client.downloadTo(base64Encoder, `uploads/${filename}`)
+    //     }
+    //     catch (err) {
+    //       console.log(err)
+    //       response.statusCode = 400;
+    //       response.setHeader('Content-Type', 'application/json')
+    //       response.end(JSON.stringify({ status: 'error', description: error }))
+    //     }
+    //     client.close()
+    //   })();
+    // })
   }
   /**
    * Error on any other path
