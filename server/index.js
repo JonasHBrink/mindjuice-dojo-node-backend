@@ -14,7 +14,7 @@ app.get("/api", (req, res) => {
 });
 
 app.post("/upload", (req, res) => {
-  res.json({ message: "Hello from server!", reg: req });
+  res.json({ message: "Hello from server!" });
 });
 
 // const ftp = require("basic-ftp")
