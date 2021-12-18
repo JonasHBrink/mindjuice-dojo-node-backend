@@ -91,9 +91,9 @@ http.createServer((req, response) => {
     const client = new ftp.Client(/*timeout = 180000*/) // 2min timeout for debug
     client.ftp.verbose = true
     client.access({
-      host: "localhost",
-      user: "anonymous",
-      password: "",
+      host: "linux110.unoeuro.com",
+      user: "studiebyen-humle.dk",
+      password: "Crockstar612",
       secure: false
     }).then(ftpResponse => {
       (async () => {
