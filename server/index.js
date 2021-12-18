@@ -23,7 +23,7 @@ app.get("/api", (req, res) => {
 });
 
 app.post("/upload", (req, res) => {
-  // upload(req);
+  upload(req.body);
   res.json({ message: req.body });
 });
 
