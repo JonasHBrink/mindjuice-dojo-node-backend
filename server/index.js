@@ -60,6 +60,12 @@ var {Base64Encode} = require('base64-stream')
 let port = 3001
 
 http.createServer((req, response) => {
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
+    'Access-Control-Max-Age': 2592000, // 30 days
+    /** add other headers as per requirement */
+  };
   /**
    * `/` loads index.html
    */
@@ -77,6 +83,7 @@ http.createServer((req, response) => {
     let contentLength = parseInt(req.headers['content-length'])
     if (isNaN(contentLength) || contentLength <= 0 ) {
       response.statusCode = 411;
+      response.setHeader(headers);
       response.end(JSON.stringify({status: 'error', description: 'No File'}))
       return
     }
