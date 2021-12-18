@@ -4,17 +4,22 @@ const app = express();
 const cors = require('cors');
 const ftp = require("basic-ftp");
 
-app.use(cors({
-  origin: '*'
-}));
+app.use(
+  cors({
+    origin: '*'
+  }),
+  express.urlencoded({
+    extended: true
+  })
+);
 
 app.get("/api", (req, res) => {
   res.json({ message: "Hello from server!" });
 });
 
 app.post("/upload", (req, res) => {
-  upload(req);
-  res.json({ message: "Upload" });
+  // upload(req);
+  res.json({ message: req.body });
 });
 
 async function upload(file) {
