@@ -55,7 +55,7 @@ const fs = require('fs')
 
 // Third-party modules
 const ftp = require("basic-ftp")
-var {Base64Encode} = require('base64-stream')
+var { Base64Encode } = require('base64-stream')
 
 let port = 3001
 
@@ -70,21 +70,17 @@ http.createServer((req, response) => {
    * `/` loads index.html
    */
   if (req.url == '/' && req.method.toLowerCase() == 'get') {
-    response.setHeader('Content-Type', 'text/html')
-    const stream = fs.createReadStream(`${__dirname}/zindex.html`)
-    // No need to call res.end() because pipe calls it automatically
-    stream.pipe(response)
-  } 
+    response.writeHead = (200, headers);
+  }
   /**
    * `/fileUpload` only works with POST
    * Saves uploaded files to the root
    */
   else if (req.url == '/fileUpload' && req.method.toLowerCase() == 'post') {
     let contentLength = parseInt(req.headers['content-length'])
-    if (isNaN(contentLength) || contentLength <= 0 ) {
-      response.statusCode = 411;
-      response.setHeader(headers);
-      response.end(JSON.stringify({status: 'error', description: 'No File'}))
+    if (isNaN(contentLength) || contentLength <= 0) {
+      response.writeHead = (411, headers);
+      response.end(JSON.stringify({ status: 'error', description: 'No File' }))
       return
     }
 
@@ -114,21 +110,20 @@ http.createServer((req, response) => {
           base64Encoder.pipe(response)
           await client.downloadTo(base64Encoder, `uploads/${filename}`)
         }
-        catch(err) {
+        catch (err) {
           console.log(err)
-          response.statusCode = 400;
-          response.setHeader('Content-Type', 'application/json')
-          response.end(JSON.stringify({status: 'error', description: error}))
+          response.writeHead = (400, headers);
+          response.end(JSON.stringify({ status: 'error', description: error }))
         }
         client.close()
       })();
     })
-  } 
+  }
   /**
    * Error on any other path
    */
   else {
-    response.setHeader('Content-Type', 'text/html')
+    response.writeHead = (411, headers);
     response.end('<html><body><h1>Page Doesn\'t exist<h1></body></html>')
   }
 }).listen(port, () => {
