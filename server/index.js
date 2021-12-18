@@ -9,13 +9,12 @@ app.use(cors({
   origin: '*'
 }));
 
-// app.get("/api", (req, res) => {
-//   res.json({ message: "Hello from server!" });
-// });
-
-app.post("/api", (req, res) => {
-  console.log(req);
+app.get("/api", (req, res) => {
   res.json({ message: "Hello from server!" });
+});
+
+app.post("/upload", (req, res) => {
+  res.json({ message: "Hello from server!", reg: req });
 });
 
 // const ftp = require("basic-ftp")
