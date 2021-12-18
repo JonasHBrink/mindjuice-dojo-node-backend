@@ -60,14 +60,14 @@ var { Base64Encode } = require('base64-stream')
 let port = 3001
 
 http.createServer((req, response) => {
+  response.setHeader('Access-Control-Allow-Origin', '*');
+  response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST');
+  response.setHeader('Access-Control-Max-Age', 2592000); // 30 days
   /**
    * `/` loads index.html
    */
   if (req.url == '/' && req.method.toLowerCase() == 'get') {
     response.setHeader('Content-Type', 'text/html')
-    response.setHeader('Access-Control-Allow-Origin', '*');
-    response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
-    response.setHeader('Access-Control-Max-Age', 2592000); // 30 days
     const stream = fs.createReadStream(`${__dirname}/zindex.html`)
     // No need to call res.end() because pipe calls it automatically
     stream.pipe(response)
@@ -106,9 +106,6 @@ http.createServer((req, response) => {
 
           // Download the image from the FTP server and send it as response
           response.setHeader('Content-Type', req.headers['content-type'])
-          response.setHeader('Access-Control-Allow-Origin', '*');
-          response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
-          response.setHeader('Access-Control-Max-Age', 2592000); // 30 days
           var base64Encoder = new Base64Encode()
           base64Encoder.pipe(response)
           await client.downloadTo(base64Encoder, `uploads/${filename}`)
@@ -117,9 +114,6 @@ http.createServer((req, response) => {
           console.log(err)
           response.statusCode = 400;
           response.setHeader('Content-Type', 'application/json')
-          response.setHeader('Access-Control-Allow-Origin', '*');
-          response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
-          response.setHeader('Access-Control-Max-Age', 2592000); // 30 days
           response.end(JSON.stringify({ status: 'error', description: error }))
         }
         client.close()
@@ -131,9 +125,6 @@ http.createServer((req, response) => {
    */
   else {
     response.setHeader('Content-Type', 'text/html')
-    response.setHeader('Access-Control-Allow-Origin', '*');
-    response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
-    response.setHeader('Access-Control-Max-Age', 2592000); // 30 days
     response.end('<html><body><h1>Page Doesn\'t exist<h1></body></html>')
   }
 }).listen(port, () => {
