@@ -103,9 +103,8 @@ http.createServer((req, response) => {
         try {
           // Upload the image to the FTP server
           await client.uploadFrom(req, `uploads/${filename}`)
-
           // Download the image from the FTP server and send it as response
-          response.setHeader('Content-Type', req.headers['content-type'])
+          response.writeHead = (201, headers);
           var base64Encoder = new Base64Encode()
           base64Encoder.pipe(response)
           await client.downloadTo(base64Encoder, `uploads/${filename}`)
