@@ -60,70 +60,80 @@ var { Base64Encode } = require('base64-stream')
 let port = 3001
 
 http.createServer((req, response) => {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'OPTIONS, POST, GET',
-    'Access-Control-Max-Age': 2592000, // 30 days
-    /** add other headers as per requirement */
-  };
   /**
    * `/` loads index.html
    */
   if (req.url == '/' && req.method.toLowerCase() == 'get') {
-    response.writeHead = (200, headers);
+    response.setHeader('Content-Type', 'text/html')
+    response.setHeader('Access-Control-Allow-Origin', '*');
+    response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+    response.setHeader('Access-Control-Max-Age', 2592000); // 30 days
+    const stream = fs.createReadStream(`${__dirname}/zindex.html`)
+    // No need to call res.end() because pipe calls it automatically
+    stream.pipe(response)
   }
   /**
    * `/fileUpload` only works with POST
    * Saves uploaded files to the root
    */
   else if (req.url == '/fileUpload' && req.method.toLowerCase() == 'post') {
-    response.writeHead = (200, headers);
-    // let contentLength = parseInt(req.headers['content-length'])
-    // if (isNaN(contentLength) || contentLength <= 0) {
-    //   response.writeHead = (411, headers);
-    //   response.end(JSON.stringify({ status: 'error', description: 'No File' }))
-    //   return
-    // }
+    let contentLength = parseInt(req.headers['content-length'])
+    if (isNaN(contentLength) || contentLength <= 0) {
+      response.statusCode = 411;
+      response.end(JSON.stringify({ status: 'error', description: 'No File' }))
+      return
+    }
 
-    // // Try to use the original filename
-    // let filename = req.headers['filename']
-    // if (filename == null) {
-    //   filename = "file." + req.headers['content-type'].split('/')[1]
-    // }
+    // Try to use the original filename
+    let filename = req.headers['filename']
+    if (filename == null) {
+      filename = "file." + req.headers['content-type'].split('/')[1]
+    }
 
 
-    // const client = new ftp.Client(/*timeout = 180000*/) // 2min timeout for debug
-    // client.ftp.verbose = true
-    // client.access({
-    //   host: "linux110.unoeuro.com",
-    //   user: "studiebyen-humle.dk",
-    //   password: "Crockstar612",
-    //   secure: false
-    // }).then(ftpResponse => {
-    //   (async () => {
-    //     try {
-    //       // Upload the image to the FTP server
-    //       await client.uploadFrom(req, `uploads/${filename}`)
-    //       // Download the image from the FTP server and send it as response
-    //       response.writeHead = (201, headers);
-    //       var base64Encoder = new Base64Encode()
-    //       base64Encoder.pipe(response)
-    //       await client.downloadTo(base64Encoder, `uploads/${filename}`)
-    //     }
-    //     catch (err) {
-    //       console.log(err)
-    //       response.writeHead = (400, headers);
-    //       response.end(JSON.stringify({ status: 'error', description: error }))
-    //     }
-    //     client.close()
-    //   })();
-    // })
+    const client = new ftp.Client(/*timeout = 180000*/) // 2min timeout for debug
+    client.ftp.verbose = true
+    client.access({
+      host: "linux110.unoeuro.com",
+      user: "studiebyen-humle.dk",
+      password: "Crockstar612",
+      secure: false
+    }).then(ftpResponse => {
+      (async () => {
+        try {
+          // Upload the image to the FTP server
+          await client.uploadFrom(req, `uploads/${filename}`)
+
+          // Download the image from the FTP server and send it as response
+          response.setHeader('Content-Type', req.headers['content-type'])
+          response.setHeader('Access-Control-Allow-Origin', '*');
+          response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+          response.setHeader('Access-Control-Max-Age', 2592000); // 30 days
+          var base64Encoder = new Base64Encode()
+          base64Encoder.pipe(response)
+          await client.downloadTo(base64Encoder, `uploads/${filename}`)
+        }
+        catch (err) {
+          console.log(err)
+          response.statusCode = 400;
+          response.setHeader('Content-Type', 'application/json')
+          response.setHeader('Access-Control-Allow-Origin', '*');
+          response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+          response.setHeader('Access-Control-Max-Age', 2592000); // 30 days
+          response.end(JSON.stringify({ status: 'error', description: error }))
+        }
+        client.close()
+      })();
+    })
   }
   /**
    * Error on any other path
    */
   else {
-    response.writeHead = (411, headers);
+    response.setHeader('Content-Type', 'text/html')
+    response.setHeader('Access-Control-Allow-Origin', '*');
+    response.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+    response.setHeader('Access-Control-Max-Age', 2592000); // 30 days
     response.end('<html><body><h1>Page Doesn\'t exist<h1></body></html>')
   }
 }).listen(port, () => {
